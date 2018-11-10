@@ -3,13 +3,12 @@ from rest_framework.serializers import ModelSerializer, CharField, Serializer
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from rest_framework.authtoken.models import Token
-from django.contrib.auth import get_user_model
 
 """
     USER LOGIN ENDPOINT "...user/auth/"
     
     required: username, password
-    returns id, username, json web token
+    returns id, username, json web token (JWT)
 """
 
 
@@ -53,8 +52,8 @@ class UserLoginSerializer(ModelSerializer):
 """
     USER SIGN UP ENDPOINT "...user/signup/"
     
-    required: username, password, email
-    returns id, username, json web token
+    required: username, password, email  - optional first_name, last_name
+    returns id, username, email, first_name, last_name
 """
 
 
@@ -63,9 +62,12 @@ class UserCreateSerializer(ModelSerializer):
         model = User
 
         fields = [
+            'id',
             'username',
             'email',
             'password',
+            'first_name',
+            'last_name',
         ]
         extra_kwargs = {"password":
                             {"write_only": True
@@ -79,9 +81,22 @@ class UserCreateSerializer(ModelSerializer):
         username = validated_data["username"]
         email = validated_data["email"]
         password = validated_data["password"]
+        # checking the data which is not required if is there, otherwise fills the forms with an empty string
+        if "first_name" in validated_data:
+            first_name = validated_data['first_name']
+        else:
+            first_name = ''
+
+        if "last_name" in validated_data:
+            last_name = validated_data['last_name']
+        else:
+            last_name = ''
+
         user_object = User(
             username=username,
             email=email,
+            first_name=first_name,
+            last_name=last_name
         )
         user_object.set_password(password)
         user_object.save()
