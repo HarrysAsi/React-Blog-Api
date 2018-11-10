@@ -1,8 +1,17 @@
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from django.contrib.auth.models import User, Group
-from user.serializers import UserLoginSerializer
+from user.serializers import UserLoginSerializer, UserCreateSerializer
 from rest_framework.views import APIView
+from rest_framework.generics import RetrieveAPIView, ListAPIView, UpdateAPIView, DestroyAPIView, CreateAPIView
+
+
+class UserCreateApi(CreateAPIView):
+    """
+    API endpoint that creates a requested user
+    """
+    queryset = User.objects.all()
+    serializer_class = UserCreateSerializer
 
 
 class UserLoginApi(APIView):
