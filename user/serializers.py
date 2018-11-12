@@ -3,6 +3,14 @@ from rest_framework.serializers import ModelSerializer, CharField, Serializer
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from rest_framework.authtoken.models import Token
+from user.models import Profile, Address
+from django.core import serializers
+from rest_framework.parsers import JSONParser
+from rest_framework.decorators import parser_classes
+from django.http import JsonResponse
+from json import dumps
+from django.http import HttpRequest, HttpResponse
+import json
 
 """
     USER LOGIN ENDPOINT "...user/auth/"
@@ -57,6 +65,12 @@ class UserLoginSerializer(ModelSerializer):
 """
 
 
+# class UserProfileSerializer(ModelSerializer):
+#     class Meta:
+#         model = Profile
+#         fields = ('id', 'telephone', 'image')
+#
+
 class UserCreateSerializer(ModelSerializer):
     class Meta:
         model = User
@@ -69,10 +83,9 @@ class UserCreateSerializer(ModelSerializer):
             'first_name',
             'last_name',
         ]
-        extra_kwargs = {"password":
-                            {"write_only": True
-                             },
-                        }
+        extra_kwargs = {
+            "password": {"write_only": True},
+        }
 
     def update(self, instance, validated_data):
         pass
@@ -98,6 +111,28 @@ class UserCreateSerializer(ModelSerializer):
             first_name=first_name,
             last_name=last_name
         )
+
         user_object.set_password(password)
         user_object.save()
+
+        profile_object = Profile(
+            user_id=user_object.id,
+        )
+        address_object = Address(
+            user_id=user_object.id
+        )
+
+        profile_object.save()
+        address_object.save()
         return user_object
+
+    def to_representation(self, instance):
+        print(instance)
+        data = super(UserCreateSerializer, self).to_representation(instance)
+        # response = {}
+        # get the id for the profile
+        # id = (list(data.items())[0])[1]
+        # user_profile = Profile.objects.filter(user_id=id).values()
+        # data["profile"] = user_profile
+        # response["user"] = data
+        return data

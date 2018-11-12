@@ -29,6 +29,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'user',
     'django_mysql',
     'rest_framework.authtoken',
     'rest_framework',
@@ -134,7 +135,11 @@ USE_L10N = True
 
 USE_TZ = True
 
+STATIC_URL = '/static/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # specify the path of the directory and we access the media folder
+
+MEDIA_URL = '/media/'
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
-
-STATIC_URL = '/static/'
