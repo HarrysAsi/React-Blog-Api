@@ -1,16 +1,10 @@
 from django.contrib.auth.models import User, Group, Permission
-from rest_framework.serializers import ModelSerializer, CharField, Serializer
+from rest_framework.serializers import ModelSerializer, CharField, Serializer, IntegerField
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from rest_framework.authtoken.models import Token
 from user.models import Profile, Address
-from django.core import serializers
-from rest_framework.parsers import JSONParser
-from rest_framework.decorators import parser_classes
-from django.http import JsonResponse
-from json import dumps
-from django.http import HttpRequest, HttpResponse
-import json
+from rest_framework_jwt.settings import api_settings
 
 """
     USER LOGIN ENDPOINT "...user/auth/"
@@ -29,6 +23,7 @@ class UserLoginSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'username', 'password', 'token')
+
         extra_kwargs = {"password": {
             "write_only": True
         }}
@@ -51,8 +46,22 @@ class UserLoginSerializer(ModelSerializer):
         if user_obj:
             if not user_obj.check_password(password):
                 raise ValidationError("Wrong username or password, please try again!")
-        jwt_token = Token.objects.get_or_create(user=user_obj)
-        data["token"] = jwt_token[0]
+
+        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+
+        payload = jwt_payload_handler(user.first())
+        token = jwt_encode_handler(payload)
+        token_object = Token.objects.filter(user_id=user_obj.id).first()
+
+        # if token_object:
+        #         #     print("Exists")
+        #         #     Token.objects.update(user_id=user_obj.id, key=token)
+        #         # else:
+        #         #     print("Doesn'; exists")
+        #         #     Token.objects.create(user_id=user_obj.id, key=token)
+
+        data["token"] = token
         data['id'] = user_obj.id
         return data
 
@@ -64,12 +73,6 @@ class UserLoginSerializer(ModelSerializer):
     returns id, username, email, first_name, last_name
 """
 
-
-# class UserProfileSerializer(ModelSerializer):
-#     class Meta:
-#         model = Profile
-#         fields = ('id', 'telephone', 'image')
-#
 
 class UserCreateSerializer(ModelSerializer):
     class Meta:
@@ -91,19 +94,11 @@ class UserCreateSerializer(ModelSerializer):
         pass
 
     def create(self, validated_data):
-        username = validated_data["username"]
-        email = validated_data["email"]
-        password = validated_data["password"]
-        # checking the data which is not required if is there, otherwise fills the forms with an empty string
-        if "first_name" in validated_data:
-            first_name = validated_data['first_name']
-        else:
-            first_name = ''
-
-        if "last_name" in validated_data:
-            last_name = validated_data['last_name']
-        else:
-            last_name = ''
+        username = validated_data.get("username", None)
+        email = validated_data.get("email", None)
+        password = validated_data.get("password", None)
+        first_name = validated_data.get('first_name', None)
+        last_name = validated_data.get('last_name', None)
 
         user_object = User(
             username=username,
@@ -134,5 +129,43 @@ class UserCreateSerializer(ModelSerializer):
         # id = (list(data.items())[0])[1]
         # user_profile = Profile.objects.filter(user_id=id).values()
         # data["profile"] = user_profile
+        # response["user"] = data
+        return data
+
+
+"""
+    USER UPDATE PROFILE AND ADDRESS ENDPOINT "...user/update_profile/"
+    
+    required: id
+    optional: tel, address, city, state, zip, token
+    returns id, username, json web token (JWT)
+"""
+
+
+class UserUpdateProfileAddressSerializer(Serializer):
+    def update(self, instance, validated_data):
+        pass
+
+    def create(self, validated_data):
+        pass
+
+    # attributes required to endpoint
+    id = IntegerField()
+    telephone_number = CharField(allow_null=True, allow_blank=True)
+    address = CharField(allow_null=True, allow_blank=True, max_length=50)
+    city = CharField(allow_null=True, allow_blank=True, max_length=50)
+    state = CharField(allow_null=True, allow_blank=True, max_length=50)
+    zip = CharField(allow_null=True, max_length=5)
+    token = CharField(read_only=True)
+
+    def to_representation(self, instance):
+        # print(instance)
+        data = super(UserUpdateProfileAddressSerializer, self).to_representation(instance)
+        # get the id for the profile
+        # id = (list(data.items())[0])[1]
+        # user_profile = Profile.objects.filter(user_id=id).values()
+        # data["profile"] = user_profile
+        # data["kappa"] = 'kappa'
+        # response = {}
         # response["user"] = data
         return data

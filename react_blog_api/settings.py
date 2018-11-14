@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import datetime
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -88,11 +89,11 @@ DATABASES = {
             'init_command': 'SET innodb_strict_mode=1',
             'sql_mode': 'traditional',
         },
-        # Tell Django to build the test database with the 'utf8mb4' character set
-        'TEST': {
-            'CHARSET': 'utf8mb4',
-            'COLLATION': 'utf8mb4_unicode_ci',
-        }
+        # # Tell Django to build the test database with the 'utf8mb4' character set
+        # 'TEST': {
+        #     'CHARSET': 'utf8',
+        #     'COLLATION': 'utf8mb4_unicode_ci',
+        # }
     }
 }
 
@@ -113,6 +114,33 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER': 'react_blog_api.utils.custom_exception_handler.custom_exception_handler',
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated', )
+}
+
+# Configure the JWTs to expire after 1 hour, and allow users to refresh near-expiration tokens
+# https://getblimp.github.io/django-rest-framework-jwt/
+JWT_AUTH = {
+    # If the secret is wrong, it will raise a jwt.DecodeError telling you as such. You can still get at the payload by setting the JWT_VERIFY to False.
+    'JWT_VERIFY': True,
+
+    # You can turn off expiration time verification by setting JWT_VERIFY_EXPIRATION to False.
+    # If set to False, JWTs will last forever meaning a leaked token could be used by an attacker indefinitely.
+    'JWT_VERIFY_EXPIRATION': True,
+
+    # This is an instance of Python's datetime.timedelta. This will be added to datetime.utcnow() to set the expiration time.
+    # Default is datetime.timedelta(seconds=300)(5 minutes).
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(hours=1),
+
+    'JWT_ALLOW_REFRESH': True,
+    'JWT_AUTH_HEADER_PREFIX': 'Bearer',
+}
 
 # REST_FRAMEWORK = {
 #     # Use Django's standard `django.contrib.auth` permissions,
