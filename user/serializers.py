@@ -1,10 +1,12 @@
 from django.contrib.auth.models import User, Group, Permission
-from rest_framework.serializers import ModelSerializer, CharField, Serializer, IntegerField
+from rest_framework.serializers import ModelSerializer, CharField, Serializer, IntegerField, ImageField
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from rest_framework.authtoken.models import Token
 from user.models import Profile, Address
 from rest_framework_jwt.settings import api_settings
+from django.forms.models import model_to_dict
+import json
 
 """
     USER LOGIN ENDPOINT "...user/auth/"
@@ -15,11 +17,9 @@ from rest_framework_jwt.settings import api_settings
 
 
 class UserLoginSerializer(ModelSerializer):
-    # attributes required to endpoint
     username = CharField()
     token = CharField(allow_blank=True, read_only=True)
 
-    # data to return
     class Meta:
         model = User
         fields = ('id', 'username', 'password', 'token')
@@ -52,14 +52,6 @@ class UserLoginSerializer(ModelSerializer):
 
         payload = jwt_payload_handler(user.first())
         token = jwt_encode_handler(payload)
-        token_object = Token.objects.filter(user_id=user_obj.id).first()
-
-        # if token_object:
-        #         #     print("Exists")
-        #         #     Token.objects.update(user_id=user_obj.id, key=token)
-        #         # else:
-        #         #     print("Doesn'; exists")
-        #         #     Token.objects.create(user_id=user_obj.id, key=token)
 
         data["token"] = token
         data['id'] = user_obj.id
@@ -156,7 +148,6 @@ class UserUpdateProfileAddressSerializer(Serializer):
     city = CharField(allow_null=True, allow_blank=True, max_length=50)
     state = CharField(allow_null=True, allow_blank=True, max_length=50)
     zip = CharField(allow_null=True, max_length=5)
-    token = CharField(read_only=True)
 
     def to_representation(self, instance):
         # print(instance)
@@ -169,3 +160,35 @@ class UserUpdateProfileAddressSerializer(Serializer):
         # response = {}
         # response["user"] = data
         return data
+
+
+class UserRetrieveProfileAddressSerializer(Serializer):
+
+    def update(self, instance, validated_data):
+        pass
+
+    def create(self, validated_data):
+        pass
+
+    telephone_number = CharField(allow_null=True, allow_blank=True)
+    address = CharField(allow_null=True, allow_blank=True, max_length=50)
+    city = CharField(allow_null=True, allow_blank=True, max_length=50)
+    state = CharField(allow_null=True, allow_blank=True, max_length=50)
+    zip = CharField(allow_null=True, max_length=5)
+
+    def to_representation(self, instance):
+        # print(instance)
+        response = {"profile": {}, "address": {}
+                    }
+        try:
+            profile_object = Profile.objects.filter(user_id=instance.id).all().first()
+            address_object = Address.objects.filter(user_id=instance.id).all().first()
+            response["profile"]["telephone"] = profile_object.telephone
+            response["address"]["address"] = address_object.address
+            response["address"]["city"] = address_object.city
+            response["address"]["state"] = address_object.state
+            response["address"]["zip"] = address_object.zip
+
+        except:
+            print("Exception Occured")
+        return response
