@@ -20,3 +20,34 @@ class Address(models.Model):
 
     def __str__(self):
         return f'{self.address} Profile'
+
+
+class Follower(models.Model):
+    user = models.ForeignKey(User, models.CASCADE, related_name='user_id')
+    follower = models.ForeignKey(User, models.CASCADE, related_name='follower_id')
+    description = models.TextField(max_length=250, blank=True, null=True)
+
+    class Meta:
+        unique_together = (('user', 'follower'),)
+
+
+class Post(models.Model):
+    user = models.ForeignKey(User, models.CASCADE)
+    description = models.CharField(max_length=500)
+    created_date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+
+class PostComment(models.Model):
+    post = models.ForeignKey(Post, models.CASCADE)
+    user = models.ForeignKey(User, models.CASCADE)
+    comment = models.CharField(max_length=500)
+    created_date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+
+class PostLike(models.Model):
+    post = models.ForeignKey(Post, models.CASCADE)
+    user = models.ForeignKey(User, models.CASCADE)
+    created_date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    updated_date = models.DateTimeField(auto_now=True)
