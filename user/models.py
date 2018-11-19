@@ -31,23 +31,21 @@ class Follower(models.Model):
         unique_together = (('user', 'follower'),)
 
 
-class Post(models.Model):
-    user = models.ForeignKey(User, models.CASCADE)
-    description = models.CharField(max_length=500)
-    created_date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
-    updated_date = models.DateTimeField(auto_now=True)
-
-
 class PostComment(models.Model):
-    post = models.ForeignKey(Post, models.CASCADE)
-    user = models.ForeignKey(User, models.CASCADE)
     comment = models.CharField(max_length=500)
     created_date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     updated_date = models.DateTimeField(auto_now=True)
 
 
 class PostLike(models.Model):
-    post = models.ForeignKey(Post, models.CASCADE)
-    user = models.ForeignKey(User, models.CASCADE)
     created_date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     updated_date = models.DateTimeField(auto_now=True)
+
+
+class Post(models.Model):
+    user = models.ForeignKey(User, models.CASCADE)
+    description = models.CharField(max_length=500)
+    created_date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    updated_date = models.DateTimeField(auto_now=True)
+    comments = models.ManyToManyField(PostComment)
+    likes = models.ManyToManyField(PostLike)

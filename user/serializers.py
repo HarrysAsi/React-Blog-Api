@@ -1,9 +1,8 @@
 from django.contrib.auth.models import User, Group, Permission
-from rest_framework.serializers import ModelSerializer, CharField, Serializer, IntegerField, ImageField
+from rest_framework.serializers import ModelSerializer, CharField, Serializer, IntegerField
 from django.core.exceptions import ValidationError
 from django.db.models import Q
-from rest_framework.authtoken.models import Token
-from user.models import Profile, Address
+from user.models import Profile, Address, PostComment, PostLike, Post, Follower
 from rest_framework_jwt.settings import api_settings
 from django.forms.models import model_to_dict
 import json
@@ -116,12 +115,6 @@ class UserCreateSerializer(ModelSerializer):
     def to_representation(self, instance):
         print(instance)
         data = super(UserCreateSerializer, self).to_representation(instance)
-        # response = {}
-        # get the id for the profile
-        # id = (list(data.items())[0])[1]
-        # user_profile = Profile.objects.filter(user_id=id).values()
-        # data["profile"] = user_profile
-        # response["user"] = data
         return data
 
 
@@ -150,15 +143,7 @@ class UserUpdateProfileAddressSerializer(Serializer):
     zip = CharField(allow_null=True, max_length=5)
 
     def to_representation(self, instance):
-        # print(instance)
         data = super(UserUpdateProfileAddressSerializer, self).to_representation(instance)
-        # get the id for the profile
-        # id = (list(data.items())[0])[1]
-        # user_profile = Profile.objects.filter(user_id=id).values()
-        # data["profile"] = user_profile
-        # data["kappa"] = 'kappa'
-        # response = {}
-        # response["user"] = data
         return data
 
 
@@ -192,3 +177,43 @@ class UserRetrieveProfileAddressSerializer(Serializer):
         except:
             print("Exception Occured")
         return response
+
+
+class PostSerializer(ModelSerializer):
+    class Meta:
+        model = Post
+
+        fields = [
+            'user',
+            'description',
+            'created_date',
+        ]
+
+
+class UserListSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'first_name', 'last_name', 'email')
+
+
+class FollowerSerializer(ModelSerializer):
+    follower = UserListSerializer(many=False)
+
+    class Meta:
+        model = Follower
+        fields = ('id', 'description', 'follower')
+
+
+class CommentsSerializer(ModelSerializer):
+    class Meta:
+        model = PostComment
+        fields = '__all__'
+
+
+class FollowerPostsSerializer(ModelSerializer):
+    user = UserListSerializer(many=False)
+    comments = CommentsSerializer(many=True)
+
+    class Meta:
+        model = Post
+        fields = '__all__'
