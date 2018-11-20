@@ -33,11 +33,13 @@ class Follower(models.Model):
 
 class PostComment(models.Model):
     comment = models.CharField(max_length=500)
+    user = models.ForeignKey(User, models.CASCADE)
     created_date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     updated_date = models.DateTimeField(auto_now=True)
 
 
 class PostLike(models.Model):
+    user = models.ForeignKey(User, models.CASCADE)
     created_date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     updated_date = models.DateTimeField(auto_now=True)
 

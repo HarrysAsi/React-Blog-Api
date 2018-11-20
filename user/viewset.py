@@ -10,7 +10,7 @@ from user.pagination import PostCommentsPagination
 
 from user.serializers import UserLoginSerializer, UserCreateSerializer, UserUpdateProfileAddressSerializer, \
     UserRetrieveProfileAddressSerializer, PostSerializer, FollowerSerializer, FollowerPostsSerializer, \
-    CommentsSerializer
+    CommentsSerializer, PostCommentSerializer
 
 
 class FollowerPostsApi(ListAPIView):
@@ -82,6 +82,31 @@ class PostCreateApi(CreateAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = [AllowAny]
+
+
+class PostCommentCreateApi(CreateAPIView):
+    """
+    API endpoint that creates a post for a specific user
+    """
+    queryset = PostComment.objects.all()
+    serializer_class = PostCommentSerializer
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        serializer = PostCommentSerializer(data=data)
+        if serializer.is_valid(raise_exception=True):
+            comment = serializer.data["comment"]
+            user_id = serializer.data["user"]
+            comment_id = kwargs['pk']
+            post_comment = PostComment(comment=comment, user=User.objects.filter(pk=user_id).first())
+            post = Post.objects.filter(pk=comment_id).first()
+            if not post:
+                return Response(serializer.data, status=HTTP_400_BAD_REQUEST)
+            post_comment.save()
+            post.comments.add(post_comment)
+            return Response(serializer.data, status=HTTP_200_OK)
+        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
 
 class UserCreateApi(CreateAPIView):

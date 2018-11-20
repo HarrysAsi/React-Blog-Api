@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from user.viewset import UserLoginApi, UserCreateApi, UserUpdateProfileAddressApi, UserRetrieveProfileAddressApi, \
-    PostCreateApi, PostListApi, FollowerListApi, FollowerPostsApi
+    PostCreateApi, PostListApi, FollowerListApi, FollowerPostsApi, PostCommentCreateApi
 
 urlpatterns = [
     path('auth/', UserLoginApi.as_view(), name='login'),
@@ -12,5 +12,6 @@ urlpatterns = [
     path('retrieve_posts/<int:pk>', PostListApi.as_view(), name='retrieve_posts'),
     path('follows/<int:pk>', FollowerListApi.as_view(), name='follows'),
     path('follower_posts/<int:pk>', FollowerPostsApi.as_view(), name='follows'),
+    path('comment/<int:pk>', PostCommentCreateApi.as_view(), name='comment'),
     # path('create_comment/<int:pk>', PostCommentApi.as_view(), name='create_comment'),
 ]

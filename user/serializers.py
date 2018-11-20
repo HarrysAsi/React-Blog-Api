@@ -205,14 +205,31 @@ class FollowerSerializer(ModelSerializer):
 
 
 class CommentsSerializer(ModelSerializer):
+    user = UserListSerializer(many=False)
+
     class Meta:
         model = PostComment
+        fields = '__all__'
+
+
+class PostCommentSerializer(ModelSerializer):
+    class Meta:
+        model = PostComment
+        fields = ('comment', 'user')
+
+
+class PostLikesSerializer(ModelSerializer):
+    user = UserListSerializer(many=False)
+
+    class Meta:
+        model = PostLike
         fields = '__all__'
 
 
 class FollowerPostsSerializer(ModelSerializer):
     user = UserListSerializer(many=False)
     comments = CommentsSerializer(many=True)
+    likes = PostLikesSerializer(many=True)
 
     class Meta:
         model = Post
