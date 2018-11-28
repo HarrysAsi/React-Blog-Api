@@ -18,7 +18,7 @@ pip install django-filter
 We use git for versioning.
 
 ## Examples
-<img src="git_photos/admin_login.png" width=200;/> <img src="git_photos/tables_admin.png" width=200;/> <img src="git_photos/Authentication.png" width=200;/> <img src="git_photos/authentication_response.png" width=200;/> 
+<img src="git_photos/admin_login.png" width=400;/> <img src="git_photos/tables_admin.png" width=400;/> <img src="git_photos/Authentication.png" width=400;/> <img src="git_photos/authentication_response.png" width=400;/> 
 
 ## Authors
 
