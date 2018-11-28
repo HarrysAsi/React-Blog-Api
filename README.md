@@ -5,7 +5,7 @@ Authentication is based on Token Authentication (Json Web Token).
 
 ### Prerequisites - installing
 
-You have to install Python 3.6+ and Django Framework
+You have to install Python 3.6+ and Django Framework.
 Change the database information in the settings.py file based on your setup.
 
 ```
