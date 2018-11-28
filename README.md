@@ -1,6 +1,7 @@
 # Python Django Restfull API
 
-A restfull API for the react-blog project based on Django-Restfull Framework
+A restfull API for the react-blog project based on Django-Restfull Framework.
+Authentication is based on Token Authentication (Json Web Token).
 
 ### Prerequisites - installing
 
