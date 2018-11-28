@@ -1,16 +1,15 @@
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
 from rest_framework.views import APIView
 from rest_framework.generics import RetrieveAPIView, ListAPIView, CreateAPIView
 from user.controller import update_profile, update_address
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from user.models import Post, PostLike, PostComment, Follower
-from user.pagination import PostCommentsPagination
+from user.models import Post, PostComment, Follower
 
 from user.serializers import UserLoginSerializer, UserCreateSerializer, UserUpdateProfileAddressSerializer, \
     UserRetrieveProfileAddressSerializer, PostSerializer, FollowerSerializer, FollowerPostsSerializer, \
-    CommentsSerializer, PostCommentSerializer
+    PostCommentSerializer
 
 
 class FollowerPostsApi(ListAPIView):
@@ -137,12 +136,18 @@ class UserLoginApi(APIView):
 
 
 class UserRetrieveProfileAddressApi(RetrieveAPIView):
+    """
+        API endpoint which returns the profile and address for a requested user
+    """
     queryset = User.objects.all()
     serializer_class = UserRetrieveProfileAddressSerializer
     permission_classes = [AllowAny]
 
 
 class UserUpdateProfileAddressApi(CreateAPIView):
+    """
+        API endpoint which updated the profile and address for a requested user
+    """
     queryset = User.objects.all()
     serializer_class = UserUpdateProfileAddressSerializer
     permission_classes = [AllowAny]

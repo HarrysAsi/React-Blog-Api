@@ -4,8 +4,6 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q
 from user.models import Profile, Address, PostComment, PostLike, Post, Follower
 from rest_framework_jwt.settings import api_settings
-from django.forms.models import model_to_dict
-import json
 
 """
     USER LOGIN ENDPOINT "...user/auth/"
@@ -145,6 +143,16 @@ class UserUpdateProfileAddressSerializer(Serializer):
     def to_representation(self, instance):
         data = super(UserUpdateProfileAddressSerializer, self).to_representation(instance)
         return data
+
+
+
+"""
+    USER UPDATE PROFILE AND ADDRESS ENDPOINT "...user/update_profile/"
+    
+    required: id
+    optional: tel, address, city, state, zip, token
+    returns id, username, json web token (JWT)
+"""
 
 
 class UserRetrieveProfileAddressSerializer(Serializer):

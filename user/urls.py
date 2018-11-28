@@ -1,7 +1,11 @@
-from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
 from user.viewset import UserLoginApi, UserCreateApi, UserUpdateProfileAddressApi, UserRetrieveProfileAddressApi, \
     PostCreateApi, PostListApi, FollowerListApi, FollowerPostsApi, PostCommentCreateApi
+
+"""
+Urls for the api endpoints
+
+"""
 
 urlpatterns = [
     path('auth/', UserLoginApi.as_view(), name='login'),
@@ -13,5 +17,4 @@ urlpatterns = [
     path('follows/<int:pk>', FollowerListApi.as_view(), name='follows'),
     path('follower_posts/<int:pk>', FollowerPostsApi.as_view(), name='follows'),
     path('comment/<int:pk>', PostCommentCreateApi.as_view(), name='comment'),
-    # path('create_comment/<int:pk>', PostCommentApi.as_view(), name='create_comment'),
 ]
